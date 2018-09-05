@@ -18,7 +18,6 @@ import com.capitalone.dashboard.service.CloudSubnetService;
 import com.capitalone.dashboard.service.CloudVirtualNetworkService;
 import com.capitalone.dashboard.service.CloudVolumeService;
 import com.capitalone.dashboard.service.CmdbService;
-import com.capitalone.dashboard.service.CodeQualityService;
 import com.capitalone.dashboard.service.CollectorService;
 import com.capitalone.dashboard.service.CommitService;
 import com.capitalone.dashboard.service.ConfigurationService;
@@ -119,11 +118,6 @@ public class TestAuthConfig {
     @Bean
     public CloudSubnetService cloudService() {
         return Mockito.mock(CloudSubnetService.class);
-    }
-
-    @Bean
-    public CodeQualityService codeQualityService() {
-        return Mockito.mock(CodeQualityService.class);
     }
 
     @Bean

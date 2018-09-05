@@ -1,5 +1,6 @@
 package com.capitalone.dashboard.rest;
 
+import com.capitalone.dashboard.auth.access.PermitAll;
 import com.capitalone.dashboard.editors.CaseInsensitiveCodeQualityTypeEditor;
 import com.capitalone.dashboard.misc.HygieiaException;
 import com.capitalone.dashboard.model.CodeQuality;
@@ -49,6 +50,7 @@ public class CodeQualityController {
         return codeQualityService.search(request);
     }
 
+    @PermitAll
     @RequestMapping(value = "/quality/static-analysis", method = POST,
             consumes = APPLICATION_JSON_VALUE, produces = APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createStaticAnanlysis(@Valid @RequestBody CodeQualityCreateRequest request) throws HygieiaException {

@@ -1,15 +1,7 @@
 package com.capitalone.dashboard.service;
 
 import com.capitalone.dashboard.misc.HygieiaException;
-import com.capitalone.dashboard.model.CodeQuality;
-import com.capitalone.dashboard.model.CodeQualityMetric;
-import com.capitalone.dashboard.model.CodeQualityType;
-import com.capitalone.dashboard.model.Collector;
-import com.capitalone.dashboard.model.CollectorItem;
-import com.capitalone.dashboard.model.CollectorType;
-import com.capitalone.dashboard.model.Component;
-import com.capitalone.dashboard.model.DataResponse;
-import com.capitalone.dashboard.model.QCodeQuality;
+import com.capitalone.dashboard.model.*;
 import com.capitalone.dashboard.repository.CodeQualityRepository;
 import com.capitalone.dashboard.repository.CollectorRepository;
 import com.capitalone.dashboard.repository.ComponentRepository;
@@ -19,7 +11,7 @@ import com.capitalone.dashboard.request.CollectorRequest;
 import com.google.common.base.Objects;
 import com.google.common.collect.Iterables;
 import com.mysema.query.BooleanBuilder;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bson.types.ObjectId;
 import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;

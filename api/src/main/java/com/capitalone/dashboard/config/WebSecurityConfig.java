@@ -7,6 +7,8 @@ import java.util.Map;
 import com.capitalone.dashboard.auth.access.PermitAll;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.Http401AuthenticationEntryPoint;
@@ -48,7 +50,9 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
 @EnableConfigurationProperties
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-	
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(WebSecurityConfig.class);
+
 	@Autowired
 	private JwtAuthenticationFilter jwtAuthenticationFilter;
 	
@@ -86,7 +90,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 								.antMatchers(HttpMethod.POST, "/performance").permitAll()
 					            .antMatchers(HttpMethod.POST, "/artifact").permitAll()
 					            .antMatchers(HttpMethod.POST, "/quality/test").permitAll()
-					            .antMatchers(HttpMethod.POST, "/quality/static-analysis").permitAll()
                                 //Temporary solution to allow Github webhook
                                 .antMatchers(HttpMethod.POST, "/commit/github/v3").permitAll();
 
@@ -142,6 +145,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 			interceptUrlRegistry
 				.antMatchers(requestMethod, requestMappingInfo.getPatternsCondition().getPatterns().iterator().next())
 				.permitAll();
+
+			LOGGER.info("Patterns {} -> produces {}",
+				requestMappingInfo.getPatternsCondition().getPatterns(),
+				requestMappingInfo.getProducesCondition()
+			);
 
 		}
 	}
