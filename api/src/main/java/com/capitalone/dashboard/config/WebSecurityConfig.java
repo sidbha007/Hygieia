@@ -1,13 +1,20 @@
 package com.capitalone.dashboard.config;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import com.capitalone.dashboard.auth.access.PermitAll;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.Http401AuthenticationEntryPoint;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -15,6 +22,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.ExpressionUrlAuthorizationConfigurer;
 import org.springframework.security.ldap.authentication.ad.ActiveDirectoryLdapAuthenticationProvider;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -28,6 +36,12 @@ import com.capitalone.dashboard.auth.sso.SsoAuthenticationFilter;
 import com.capitalone.dashboard.auth.standard.StandardLoginRequestFilter;
 import com.capitalone.dashboard.auth.token.JwtAuthenticationFilter;
 import com.capitalone.dashboard.model.AuthType;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.HandlerMapping;
+import org.springframework.web.servlet.mvc.condition.RequestMethodsRequestCondition;
+import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 @Configuration
 @EnableWebSecurity
@@ -49,11 +63,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Autowired
 	private AuthProperties authProperties;
+
+	@Autowired
+	private ApplicationContext context;
 	
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 		http.headers().cacheControl();
-		http.csrf().disable()
+		ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry interceptUrlRegistry = http.csrf().disable()
 			.authorizeRequests().antMatchers("/appinfo").permitAll()
 								.antMatchers("/registerUser").permitAll()
 								.antMatchers("/findUser").permitAll()
@@ -71,7 +88,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 					            .antMatchers(HttpMethod.POST, "/quality/test").permitAll()
 					            .antMatchers(HttpMethod.POST, "/quality/static-analysis").permitAll()
                                 //Temporary solution to allow Github webhook
-                                .antMatchers(HttpMethod.POST, "/commit/github/v3").permitAll()
+                                .antMatchers(HttpMethod.POST, "/commit/github/v3").permitAll();
+
+		addPermittedApis(interceptUrlRegistry);
+
+		interceptUrlRegistry
 								.anyRequest().authenticated()
 									.and()
 								.addFilterBefore(standardLoginRequestFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -80,6 +101,49 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 								.addFilterBefore(apiTokenRequestFilter(), UsernamePasswordAuthenticationFilter.class)
 								.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 								.exceptionHandling().authenticationEntryPoint(new Http401AuthenticationEntryPoint("Authorization"));
+	}
+
+	/**
+	 * Add Permitted Api Endpoints annotated with PermitAll
+	 * @param interceptUrlRegistry
+	 */
+	private void addPermittedApis(ExpressionUrlAuthorizationConfigurer<HttpSecurity>.ExpressionInterceptUrlRegistry interceptUrlRegistry) {
+		Map<String, RequestMappingHandlerMapping> matchingBeans = BeanFactoryUtils.beansOfTypeIncludingAncestors(context,
+			RequestMappingHandlerMapping.class, true, false);
+
+		if (MapUtils.isEmpty(matchingBeans)) {
+			return;
+		}
+
+		ArrayList<HandlerMapping> handlerMappings = new ArrayList<HandlerMapping>(matchingBeans.values());
+		AnnotationAwareOrderComparator.sort(handlerMappings);
+
+		RequestMappingHandlerMapping mappings = matchingBeans.get("requestMappingHandlerMapping");
+		Map<RequestMappingInfo, HandlerMethod> handlerMethods = mappings.getHandlerMethods();
+
+		for (RequestMappingInfo requestMappingInfo : handlerMethods.keySet()) {
+			HandlerMethod handlerMethod = handlerMethods.get(requestMappingInfo);
+
+			if (!handlerMethod.getMethod().isAnnotationPresent(PermitAll.class)) {
+				continue;
+			}
+
+			RequestMethodsRequestCondition methods = requestMappingInfo.getMethodsCondition();
+
+			HttpMethod requestMethod = HttpMethod.GET;
+			if (methods.getMethods().isEmpty()) {
+				requestMethod = HttpMethod.GET;
+			} else if (methods.getMethods().contains(RequestMethod.POST)) {
+				requestMethod = HttpMethod.POST;
+			} else if (methods.getMethods().contains(RequestMethod.PUT)) {
+				requestMethod = HttpMethod.PUT;
+			}
+
+			interceptUrlRegistry
+				.antMatchers(requestMethod, requestMappingInfo.getPatternsCondition().getPatterns().iterator().next())
+				.permitAll();
+
+		}
 	}
 	
     @Override
