@@ -1,5 +1,5 @@
 <runtime>
-  <archive name="${project.artifactId}-${project.version}.tar.gz" />
+  <archive name="${project.artifactId}-${project.version}.tar.gz" classifier="archive"/>
 
   <!-- Notices -->
   <fileSet to="/">
