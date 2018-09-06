@@ -10,7 +10,8 @@
   </fileSet>
 
   <artifactSet to="/">
-    <artifact id="com.capitalone.dashboard:api:jar:${project.version}">
+    <artifact id="com.capitalone.dashboard:api:jar:${project.version}" as="api.jar">
+      <exclusion id="*:*"/>
     </artifact>
   </artifactSet>
   
