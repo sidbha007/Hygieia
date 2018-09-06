@@ -1,0 +1,15 @@
+{
+  "imagePath":"docker.prod.walmart.com/logistics/",
+  "imageName":"sample",
+  "imageVersion":"1.0",
+  "appName":"docker.prod.walmart.com/logistics/sample",
+  "image":"docker.prod.walmart.com/logistics/sample:1.0",
+  "environmentName":"Production",
+  "server":"USA967738GG52621",
+  "deploymentStatus":"Complete",
+  "deploymentEndTime":1512109842799,
+  "operation":"Install",
+  "namespace":"nm.kub.com",
+  "projectName":"NG Receiving",
+  "scmUrl":"https://github.com/org/repo"
+}
