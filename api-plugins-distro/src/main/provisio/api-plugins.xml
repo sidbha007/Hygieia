@@ -1,0 +1,21 @@
+<runtime>
+  <archive name="${project.artifactId}-${project.version}.tar.gz" />
+
+  <!-- Notices -->
+  <fileSet to="/">
+    <directory path="${basedir}">
+      <include>NOTICE</include>
+      <include>README.txt</include>
+    </directory>
+  </fileSet>
+
+  <artifactSet to="/">
+    <artifact id="com.capitalone.dashboard:api:jar:${project.version}">
+    </artifact>
+  </artifactSet>
+  
+  <artifactSet to="/plugins">
+    <artifact id="com.capitalone.dashboard:code-quality-api:${project.version}"/>
+  </artifactSet>
+  
+</runtime>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>api-plugins-distro</artifactId>
+  <name>${project.groupId}:${project.artifactId}</name>
+  <description>Hygieia API with plugins distribution</description>
+  <url>https://github.com/capitalone/Hygieia</url>
+  <packaging>provisio</packaging>
+
+  <parent>
+    <groupId>com.capitalone.dashboard</groupId>
+    <artifactId>Hygieia</artifactId>
+    <version>2.0.5-SNAPSHOT</version>
+  </parent>
+
+  <properties>
+    <provisioVersion>0.1.50</provisioVersion>
+  </properties>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+    </snapshotRepository>
+    <repository>
+      <id>ossrh</id>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+    </repository>
+  </distributionManagement>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>io.takari.maven.plugins</groupId>
+        <artifactId>provisio-maven-plugin</artifactId>
+        <version>${provisioVersion}</version>
+        <extensions>true</extensions>
+      </plugin>
+    </plugins>
+  </build>
+</project>

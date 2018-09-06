@@ -185,6 +185,7 @@
         <module>plugins/code-quality/code-quality-api</module>
         <module>api-common</module>
         <module>api</module>
+        <module>api-plugins-distro</module>
         <module>api-audit</module>
         <module>collectors/feature/rally</module>
         <module>collectors/artifact/artifactory</module>
@@ -237,6 +238,7 @@
         <module>api-common</module>
         <module>plugins/code-quality/code-quality-api</module>
         <module>api</module>
+        <module>api-plugins-distro</module>
         <module>api-audit</module>
         <module>collectors/artifact/artifactory</module>
         <module>collectors/build/bamboo</module>
